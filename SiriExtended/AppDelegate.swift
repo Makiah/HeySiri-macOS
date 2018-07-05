@@ -1,28 +1,23 @@
-//
-//  AppDelegate.swift
-//  HeySiriMacOS
-//
-//  Created by Matthijs Logemann on 16/06/2016.
-//  Copyright © 2016 Matthijs Logemann. All rights reserved.
-//
-
 import Cocoa
 
 @NSApplicationMain
-class AppDelegate: NSObject, NSApplicationDelegate, NSSpeechRecognizerDelegate {
-
-    let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-    let SR:NSSpeechRecognizer = NSSpeechRecognizer()!
+class AppDelegate: NSObject, NSApplicationDelegate, NSSpeechRecognizerDelegate
+{
+    let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength) // The status bar icon (remarkably simple to instantiate)
+    let SR:NSSpeechRecognizer = NSSpeechRecognizer()! // The `!` operator gives the `NSSpeechRecognizer` instance if it exists, or nil if it doesn't exist.
+                                                      // I've noticed that this class is the culprit for the weird audio quality drop.
     var commands = ["Hey siri", "시리야", "ヘイ シリ", "Dis siri"]
 
-    func applicationDidFinishLaunching(_ aNotification: Notification) {
+    func applicationDidFinishLaunching(_ aNotification: Notification)
+    {
         // Insert code here to initialize your application
         statusItem.title = "Hey Siri listener"
-        if let button = statusItem.button {
-            button.image = NSImage(named: NSImage.Name(rawValue: "StatusBarButtonImage"))
+        if let button = statusItem.button
+        {
+            button.image = NSImage(named: NSImage.Name(rawValue: "StatusBarButtonImage")) // References the image file in Assets.xcassets
 //            button.action = Selector(("printQuote:"))
             
-            let menu = NSMenu()
+            let menu = NSMenu() // Attaches a dropdown to the status indicator
             
             menu.addItem(NSMenuItem(title: "Resume listening", action: #selector(AppDelegate.resumeListening), keyEquivalent: "r"))
             menu.addItem(NSMenuItem(title: "Stop listening", action: #selector(AppDelegate.stopListening), keyEquivalent: "s"))
@@ -39,32 +34,36 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSSpeechRecognizerDelegate {
 
     }
     
-    @objc func quit() {
+    @objc func quit()
+    {
         NSApplication.shared.terminate(nil)
     }
     
-    func applicationWillTerminate(_ aNotification: Notification) {
+    func applicationWillTerminate(_ aNotification: Notification)
+    {
         // Insert code here to tear down your application
     }
 
-    @objc func stopListening() {
+    @objc func stopListening()
+    {
         SR.stopListening()
         NSApplication.shared.resignFirstResponder()
     }
     
-    @objc func resumeListening(){
+    @objc func resumeListening()
+    {
         NSApplication.shared.becomeFirstResponder()
 
         SR.commands = commands
         SR.delegate = self
         SR.listensInForegroundOnly = false
-        
+
         SR.startListening(); print("listening")
     }
     
-    
-    
-    func speechRecognizer(_ sender: NSSpeechRecognizer, didRecognizeCommand command: String) {
+    // The callback for when a new command is recognized by the speech recognizer.
+    func speechRecognizer(_ sender: NSSpeechRecognizer, didRecognizeCommand command: String)
+    {
         if commands.contains(command)
         {
             NSWorkspace.shared.launchApplication("/Applications/Siri.app")
