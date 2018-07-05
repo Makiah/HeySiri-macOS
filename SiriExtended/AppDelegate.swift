@@ -11,7 +11,7 @@ import Cocoa
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate, NSSpeechRecognizerDelegate {
 
-    let statusItem = NSStatusBar.system().statusItem(withLength: NSVariableStatusItemLength)
+    let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     let SR:NSSpeechRecognizer = NSSpeechRecognizer()!
     var commands = ["Hey siri", "시리야", "ヘイ シリ", "Dis siri"]
 
@@ -19,7 +19,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSSpeechRecognizerDelegate {
         // Insert code here to initialize your application
         statusItem.title = "Hey Siri listener"
         if let button = statusItem.button {
-            button.image = NSImage(named: "StatusBarButtonImage")
+            button.image = NSImage(named: NSImage.Name(rawValue: "StatusBarButtonImage"))
 //            button.action = Selector(("printQuote:"))
             
             let menu = NSMenu()
@@ -34,26 +34,26 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSSpeechRecognizerDelegate {
         
         resumeListening()
         
-        NSWorkspace.shared().notificationCenter.addObserver(self, selector: #selector(AppDelegate.stopListening), name: .NSWorkspaceWillSleep, object: nil)
-        NSWorkspace.shared().notificationCenter.addObserver(self, selector: #selector(AppDelegate.resumeListening), name: .NSWorkspaceDidWake, object: nil)
+        NSWorkspace.shared.notificationCenter.addObserver(self, selector: #selector(AppDelegate.stopListening), name: NSWorkspace.willSleepNotification, object: nil)
+        NSWorkspace.shared.notificationCenter.addObserver(self, selector: #selector(AppDelegate.resumeListening), name: NSWorkspace.didWakeNotification, object: nil)
 
     }
     
-    func quit() {
-        NSApplication.shared().terminate(nil)
+    @objc func quit() {
+        NSApplication.shared.terminate(nil)
     }
     
     func applicationWillTerminate(_ aNotification: Notification) {
         // Insert code here to tear down your application
     }
 
-    func stopListening() {
+    @objc func stopListening() {
         SR.stopListening()
-        NSApplication.shared().resignFirstResponder()
+        NSApplication.shared.resignFirstResponder()
     }
     
-    func resumeListening(){
-        NSApplication.shared().becomeFirstResponder()
+    @objc func resumeListening(){
+        NSApplication.shared.becomeFirstResponder()
 
         SR.commands = commands
         SR.delegate = self
@@ -67,7 +67,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSSpeechRecognizerDelegate {
     func speechRecognizer(_ sender: NSSpeechRecognizer, didRecognizeCommand command: String) {
         if commands.contains(command)
         {
-            NSWorkspace.shared().launchApplication("/Applications/Siri.app")
+            NSWorkspace.shared.launchApplication("/Applications/Siri.app")
         }
     }
 
