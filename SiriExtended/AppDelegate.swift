@@ -6,7 +6,12 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSSpeechRecognizerDelegate
     let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength) // The status bar icon (remarkably simple to instantiate)
     let SR:NSSpeechRecognizer = NSSpeechRecognizer()! // The `!` operator gives the `NSSpeechRecognizer` instance if it exists, or nil if it doesn't exist.
                                                       // I've noticed that this class is the culprit for the weird audio quality drop.
-    var commands = ["Hey siri", "시리야", "ヘイ シリ", "Dis siri"]
+    
+    var siriLaunchCommands = ["Siri"]
+    var customCommands = ["Execute"]
+    
+    // Has to be lazy in order to append the two instance members above.
+    lazy var commands = siriLaunchCommands + customCommands
 
     func applicationDidFinishLaunching(_ aNotification: Notification)
     {
@@ -64,7 +69,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSSpeechRecognizerDelegate
     // The callback for when a new command is recognized by the speech recognizer.
     func speechRecognizer(_ sender: NSSpeechRecognizer, didRecognizeCommand command: String)
     {
-        if commands.contains(command)
+        print("Got new command: " + command)
+        
+        if siriLaunchCommands.contains(command)
         {
             NSWorkspace.shared.launchApplication("/Applications/Siri.app")
         }
